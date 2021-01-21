@@ -2,6 +2,7 @@
 
 #define TINY_GSM_MODEM_UBLOX
 #include <TinyGsmClient.h>
+#include <math.h>
 
 TinyGsm modem(Serial2); /* 3G board modem */
 TinyGsmClient ctx(modem);
@@ -33,18 +34,21 @@ void loop() {
 
   //M5.Lcd.clear(BLACK);
   //M5.Lcd.println(F("World Clock from worldtimeapi.org"));
-  Serial.println(modem.getGPSraw());
+  //Serial.println(modem.getGPSraw());
   //getGPSraw()  GPS-GSM loc
   //getGsmLocationRaw() GSM loc
-  Serial.println("/nrefresh/n");
+  Serial.println("\nrefresh\n");
   float lat,lon,speed,alt,accuracy;
   int vsat,usat;
   int year,month,day,hour,minute,second;
   modem.getGPS(&lat,&lon,&speed,&alt,&vsat,&usat,&accuracy,&year,&month,&day,&hour,&minute,&second);
-
+  Serial.printf("%f,%f  speed=%f\n",lat,lon,speed);
   M5.Lcd.setCursor(0,0);
   M5.Lcd.setTextSize(2);
-  M5.Lcd.printf("%3.3f%3.3f",lat,lon);
+  M5.Lcd.printf("%3.3f%3.3f\n",lat,lon);
+
+  M5.Lcd.printf("XYZ=%d,%d/14",int(pow(2,13)*(180+lon)/180),int(pow(2,13)*(1-log(tan(lat*3.14/180)+1/cos(lat*3.14/180))/3.14)));
+  
 
   delay(1000 * 3);
 }
